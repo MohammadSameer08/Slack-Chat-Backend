@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import authRoutes from "./routes/auth.routes.js";
 import cookieParser from "cookie-parser";
+import { errorHandler } from "./middleware/errorHandler.js";
 
 dotenv.config();
 
@@ -18,5 +19,8 @@ app.use(cookieParser());
 // });
 
 app.use("/api/auth", authRoutes);
+
+// Error handling middleware (must be last)
+app.use(errorHandler);
 
 export default app;
