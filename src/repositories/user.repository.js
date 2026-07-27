@@ -20,3 +20,7 @@ export const updateUser = async (userId, updateData) => {
 export const findUserById = async (userId) => {
   return await userModel.findById(userId);
 };
+
+export const findUserByRefreshToken = async (refreshToken) => {
+  return await userModel.findOne({ refreshToken });
+};

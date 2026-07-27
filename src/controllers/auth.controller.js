@@ -1,11 +1,18 @@
 import * as authService from "../services/auth.service.js";
 import asyncHandler from "../utils/asyncHandler.js";
 
-const cookieOptions = {
+const accessTokenCookieOptions = {
   httpOnly: true,
   secure: process.env.NODE_ENV === "production",
   sameSite: "strict",
-  maxAge: 7 * 24 * 60 * 60 * 1000,
+  maxAge: 15 * 60 * 1000, // 15 minutes
+};
+
+const refreshTokenCookieOptions = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: "strict",
+  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
 };
 
 export const register = asyncHandler(async (req, res) => {
@@ -21,12 +28,15 @@ export const register = asyncHandler(async (req, res) => {
   delete safeUser.password;
   delete safeUser.refreshToken;
 
-  res.status(201).cookie("refreshToken", refreshToken, cookieOptions).json({
-    success: true,
-    message: "User registered successfully",
-    data: safeUser,
-    accessToken,
-  });
+  res
+    .status(201)
+    .cookie("accessToken", accessToken, accessTokenCookieOptions)
+    .cookie("refreshToken", refreshToken, refreshTokenCookieOptions)
+    .json({
+      success: true,
+      message: "User registered successfully",
+      data: safeUser,
+    });
 });
 
 export const login = asyncHandler(async (req, res) => {
@@ -41,10 +51,29 @@ export const login = asyncHandler(async (req, res) => {
   delete safeUser.password;
   delete safeUser.refreshToken;
 
-  res.status(200).cookie("refreshToken", refreshToken, cookieOptions).json({
-    success: true,
-    message: "User logged in successfully",
-    data: safeUser,
-    accessToken,
-  });
+  res
+    .status(200)
+    .cookie("accessToken", accessToken, accessTokenCookieOptions)
+    .cookie("refreshToken", refreshToken, refreshTokenCookieOptions)
+    .json({
+      success: true,
+      message: "User logged in successfully",
+      data: safeUser,
+    });
+});
+
+export const refreshToken = asyncHandler(async (req, res) => {
+  const { refreshToken } = req.cookies;
+
+  const { accessToken, newRefreshToken } =
+    await authService.refreshToken(refreshToken);
+
+  res
+    .status(200)
+    .cookie("accessToken", accessToken, accessTokenCookieOptions)
+    .cookie("refreshToken", newRefreshToken, refreshTokenCookieOptions)
+    .json({
+      success: true,
+      message: "Token refreshed successfully",
+    });
 });

@@ -51,3 +51,22 @@ export const loginUser = async (email, password) => {
     refreshToken,
   };
 };
+
+export const refreshToken = async (refreshToken) => {
+  const user = await userRepository.findUserByRefreshToken(refreshToken);
+  if (!user) {
+    throw new UnauthorizedError("Invalid refresh token");
+  }
+
+  const { accessToken, refreshToken: newRefreshToken } = generateTokens(user);
+  const hashedRefreshToken = await hashPassword(newRefreshToken);
+
+  await userRepository.updateUser(user._id, {
+    refreshToken: hashedRefreshToken,
+  });
+
+  return {
+    accessToken,
+    newRefreshToken,
+  };
+};
