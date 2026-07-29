@@ -17,3 +17,14 @@ export const generateTokens = (user) => {
 
   return { accessToken, refreshToken };
 };
+
+export const generatePasswordResetToken = (user) => {
+  const payload = {
+    id: user._id,
+    email: user.email,
+  };
+  const resetToken = jwt.sign(payload, process.env.JWT_SECRET, {
+    expiresIn: "1h",
+  });
+  return resetToken;
+};

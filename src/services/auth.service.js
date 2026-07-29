@@ -1,7 +1,12 @@
 import * as userRepository from "../repositories/user.repository.js";
-import { hashPassword, comparePassword } from "../utils/passwordUtils.js";
+import {
+  hashPassword,
+  comparePassword,
+  generateAndHashResetToken,
+} from "../utils/passwordUtils.js";
 import { generateTokens } from "../utils/tokenGenerator.js";
 import { ConflictError, UnauthorizedError } from "../error/error.js";
+import crypto from "crypto";
 
 export const registerUser = async (username, email, password) => {
   const existingUser = await userRepository.findUserByEmail(email);
@@ -77,4 +82,47 @@ export const getCurrentUser = async (userId) => {
     throw new UnauthorizedError("User not found");
   }
   return user;
+};
+
+export const forgotPassword = async (email) => {
+  const user = await userRepository.findUserByEmail(email);
+  if (!user) {
+    throw new UnauthorizedError("User not found");
+  }
+
+  const { plainToken, hashedToken } = generateAndHashResetToken(user);
+  const expiryTime = new Date(Date.now() + 3600000); // 1 hour from now
+
+  await userRepository.updateUser(user._id, {
+    passwordResetToken: hashedToken,
+    passwordResetTokenExpiry: expiryTime,
+  });
+
+  console.log(`Password reset token for ${email}: ${plainToken}`);
+  console.log(`http://localhost:3000/api/auth/reset-password/${plainToken}`);
+  
+  return plainToken;
+};
+
+export const resetPassword = async (resetToken, newPassword) => {
+  const hashedResetToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+
+  const user = await userRepository.findUserByResetToken(hashedResetToken);
+
+  if (!user) {
+    throw new UnauthorizedError("Invalid or expired reset token");
+  }
+
+  const hashedPassword = await hashPassword(newPassword);
+
+  await userRepository.updateUser(user._id, {
+    password: hashedPassword,
+    passwordResetToken: null,
+    passwordResetTokenExpiry: null,
+  });
+
+  return true;
 };

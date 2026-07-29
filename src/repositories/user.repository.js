@@ -22,9 +22,20 @@ export const findUserById = async (userId) => {
 };
 
 export const findUserByIdSafe = async (userId) => {
-  return await userModel.findById(userId).select("-password -refreshToken -__v");
+  return await userModel
+    .findById(userId)
+    .select("-password -refreshToken -__v");
 };
 
 export const findUserByRefreshToken = async (refreshToken) => {
   return await userModel.findOne({ refreshToken });
+};
+
+export const findUserByResetToken = async (resetToken) => {
+  const user = await userModel.findOne({
+    passwordResetToken: resetToken,
+    passwordResetTokenExpiry: { $gt: Date.now() },
+  });
+
+  return user;
 };

@@ -1,5 +1,6 @@
 import * as authService from "../services/auth.service.js";
 import asyncHandler from "../utils/asyncHandler.js";
+import { ValidationError } from "../error/error.js";
 
 const accessTokenCookieOptions = {
   httpOnly: true,
@@ -97,4 +98,31 @@ export const logout = asyncHandler(async (req, res) => {
       success: true,
       message: "User logged out successfully",
     });
+});
+
+export const forgotPassword = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+
+  await authService.forgotPassword(email);
+
+  res.status(200).json({
+    success: true,
+    message: "Password reset email sent successfully",
+  });
+});
+
+export const resetPassword = asyncHandler(async (req, res) => {
+  const { password } = req.body;
+  const token = req.params.token;
+
+  if (!password) {
+    throw new ValidationError("Password is required");
+  }
+
+  await authService.resetPassword(token, password);
+
+  res.status(200).json({
+    success: true,
+    message: "Password reset successfully",
+  });
 });
