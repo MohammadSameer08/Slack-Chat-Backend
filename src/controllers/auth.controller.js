@@ -87,3 +87,14 @@ export const getCurrentUser = asyncHandler(async (req, res) => {
     data: user,
   });
 });
+
+export const logout = asyncHandler(async (req, res) => {
+  res
+    .status(200)
+    .clearCookie("accessToken", accessTokenCookieOptions)
+    .clearCookie("refreshToken", refreshTokenCookieOptions)
+    .json({
+      success: true,
+      message: "User logged out successfully",
+    });
+});
