@@ -38,6 +38,7 @@ export default [
         {
           args: "after-used",
           argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
         },
       ],
 

@@ -70,3 +70,11 @@ export const refreshToken = async (refreshToken) => {
     newRefreshToken,
   };
 };
+
+export const getCurrentUser = async (userId) => {
+  const user = await userRepository.findUserByIdSafe(userId);
+  if (!user) {
+    throw new UnauthorizedError("User not found");
+  }
+  return user;
+};

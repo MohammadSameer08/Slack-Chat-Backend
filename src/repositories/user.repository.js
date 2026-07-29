@@ -21,6 +21,10 @@ export const findUserById = async (userId) => {
   return await userModel.findById(userId);
 };
 
+export const findUserByIdSafe = async (userId) => {
+  return await userModel.findById(userId).select("-password -refreshToken -__v");
+};
+
 export const findUserByRefreshToken = async (refreshToken) => {
   return await userModel.findOne({ refreshToken });
 };

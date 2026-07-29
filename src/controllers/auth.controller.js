@@ -77,3 +77,13 @@ export const refreshToken = asyncHandler(async (req, res) => {
       message: "Token refreshed successfully",
     });
 });
+
+export const getCurrentUser = asyncHandler(async (req, res) => {
+  const user = await authService.getCurrentUser(req.user.id);
+
+  res.status(200).json({
+    success: true,
+    message: "User fetched successfully",
+    data: user,
+  });
+});
