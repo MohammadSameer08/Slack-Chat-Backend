@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { WORKSPACE_ROLES } from "../constants/workspace.constants.js";
 
 const workspaceSchema = new mongoose.Schema(
   {
@@ -24,8 +25,8 @@ const workspaceSchema = new mongoose.Schema(
         },
         role: {
           type: String,
-          enum: ["owner", "admin", "member"],
-          default: "member",
+          enum: Object.values(WORKSPACE_ROLES),
+          default: WORKSPACE_ROLES.MEMBER,
         },
         joinedAt: {
           type: Date,
