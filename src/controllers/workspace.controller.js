@@ -19,19 +19,24 @@ export const createWorkspace = asyncHandler(async (req, res) => {
 
 export const getWorkspaces = asyncHandler(async (req, res) => {
   // Implementation here
+  const userId = req.user.id;
+  const workspaces = await workspaceService.getWorkspaces(userId);
   res.status(200).json({
     success: true,
     message: "Workspaces retrieved successfully",
-    data: [],
+    data: workspaces,
   });
 });
 
 export const getWorkspaceById = asyncHandler(async (req, res) => {
   // Implementation here
+  const workspaceId = req.params.id;
+  const userId = req.user.id;
+  const workspace = await workspaceService.getWorkspaceById(workspaceId, userId);
   res.status(200).json({
     success: true,
     message: "Workspace retrieved successfully",
-    data: null,
+    data: workspace,
   });
 });
 

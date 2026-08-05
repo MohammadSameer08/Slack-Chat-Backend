@@ -19,3 +19,13 @@ export const createWorkspace = async (userId, workspaceData) => {
   // Save to database via repository
   return await workspaceRepository.createWorkspace(workspace);
 };
+
+export const getWorkspaces = async (userId) => {
+  // Fetch workspaces from the database via repository
+  return await workspaceRepository.getWorkspacesByUserId(userId);
+};
+
+export const getWorkspaceById = async (workspaceId, userId) => {
+  // Fetch a single workspace by ID from the database via repository
+  return await workspaceRepository.getWorkspaceById(workspaceId, userId);
+};
