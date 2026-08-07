@@ -9,8 +9,12 @@ export const getWorkspacesByUserId = async (userId) => {
   return await Workspace.find({ "members.user": userId });
 };
 
-export const getWorkspaceById = async (workspaceId, userId) => {
-  return await Workspace.findOne({ _id: workspaceId, "members.user": userId })
+export const getWorkspaceById = async (workspaceId) => {
+  return await Workspace.findById(workspaceId)
     .populate("owner", "username email")
     .populate("members.user", "username email");
+};
+
+export const updateWorkspace = async (workspace) => {
+  return await workspace.save();
 };

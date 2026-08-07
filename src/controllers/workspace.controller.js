@@ -42,10 +42,19 @@ export const getWorkspaceById = asyncHandler(async (req, res) => {
 
 export const updateWorkspace = asyncHandler(async (req, res) => {
   // Implementation here
+  const workspaceId = req.params.id;
+  const userId = req.user.id;
+  const { name, description } = req.body;
+
+  const updatedWorkspace = await workspaceService.updateWorkspace(workspaceId, userId, {
+    name,
+    description,
+  });
+
   res.status(200).json({
     success: true,
     message: "Workspace updated successfully",
-    data: null,
+    data: updatedWorkspace,
   });
 });
 
